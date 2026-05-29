@@ -1,0 +1,41 @@
+{
+  "name": "anchor-mcp",
+  "version": "0.1.0",
+  "description": "Generate MCP tools from any Solana Anchor program's IDL — let AI agents read & simulate its instructions with zero per-program code.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "anchor-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "smoke": "tsx scripts/smoke.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "solana",
+    "anchor",
+    "mcp",
+    "model-context-protocol",
+    "idl",
+    "ai-agent"
+  ],
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.30.1",
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@solana/web3.js": "^1.95.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.3"
+  }
+}
