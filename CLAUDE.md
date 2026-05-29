@@ -22,8 +22,9 @@ TS MCP server that turns any Anchor program's IDL into agent-callable MCP tools 
 - stdout is the MCP channel → all logging to stderr.
 
 ## Run
-- `npm i` → `npm run build` → `node dist/index.js --program <id>` (or `--idl examples/sample-idl.json --program <id>`).
-- Smoke: `npm run smoke -- examples/sample-idl.json`.
+- `npm i` → `npm run build` → `node dist/index.js --program <id> [--rpc <url>]` (or `--idl examples/sample-idl.json --program <id>`).
+- HTTP: `node dist/index.js --http 8787 --program <id>` → http://localhost:8787/mcp.
+- Tests: `npx tsx scripts/smoke.ts examples/sample-idl.json` · `scripts/e2e.ts` (stdio) · `scripts/e2e-http.ts` (http) · `scripts/inspect.ts <programId>` · `scripts/live-read.ts` (Pump.fun Global).
 
 ## Roadmap (v2)
-sign/write opt-in, legacy (<0.30) IDL support, Streamable-HTTP transport, richer PDA UX, possibly a Codama renderer.
+sign/write opt-in, legacy (<0.30) IDL support, richer PDA UX, raw-IDL simulate path for degraded clients, possibly a Codama renderer.

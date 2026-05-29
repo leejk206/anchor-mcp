@@ -13,7 +13,7 @@ To let an AI agent interact with a Solana program today, you hand-write integrat
 - **Auto-derive PDAs** when the IDL declares seeds (Anchor 0.30+); else accept explicit address input.
 - **Simulate-by-default**: build + `simulateTransaction` + account reads. **No signing in v1** (safety — write = drain risk).
 - **Graceful degradation**: if the full Anchor client can't be built for an IDL, tool generation + `program_info` still work (read/simulate are disabled for that program, with the reason surfaced) — so *any* program with an IDL yields at least its instruction/account map.
-- Exposed over **stdio** (drop-in for Claude Desktop / Cursor). Streamable-HTTP transport on the roadmap.
+- Exposed over **stdio** (drop-in for Claude Desktop / Cursor) **and Streamable-HTTP** (`--http <port>`, a real URL).
 
 ## How it differs (verified competitor scan)
 | Existing | What it does | anchor-mcp difference |
@@ -29,16 +29,38 @@ To let an AI agent interact with a Solana program today, you hand-write integrat
 - Risk: Codama could ship an official MCP renderer → mitigate by building **as a Codama renderer** to ride their ecosystem.
 
 ## Status
-v1 (early). Core works: loads an Anchor IDL (on-chain via `Program.fetchIdl` or a local file), generates per-instruction MCP tools, and runs as an MCP stdio server — verified offline via `scripts/smoke.ts` (tool generation) and `scripts/e2e.ts` (real MCP client↔server round-trip). Pending: live devnet-program demo, Streamable-HTTP transport, npm publish. Full spec → `docs/SPEC.md`.
+v1. Verified: loads an Anchor IDL (on-chain `Program.fetchIdl` or local file) → generates per-instruction MCP tools → serves over **stdio and Streamable-HTTP**.
+- Offline: `scripts/smoke.ts` (tool gen), `scripts/e2e.ts` (stdio MCP round-trip), `scripts/e2e-http.ts` (HTTP MCP round-trip).
+- On-chain (mainnet): `scripts/probe.ts` found on-chain IDLs for Squads/MarginFi/Kamino/Jupiter/Meteora/Pump.fun; `scripts/inspect.ts` ran `program_info` on Pump.fun (42 tools) and Squads v4 (degraded → 31 instructions); `scripts/live-read.ts` decoded Pump.fun's on-chain `Global` account via `read_account`.
+
+Pending: live `simulate` demo, npm publish. Full spec → `docs/SPEC.md`.
 
 ## Quickstart
 ```bash
 npm install && npm run build
-# point at a program (on-chain IDL) or a local IDL file:
-node dist/index.js --program <PROGRAM_ID> --rpc https://api.devnet.solana.com
+
+# stdio (for Claude Desktop / Cursor) — point at a program ID or a local IDL:
+node dist/index.js --program <PROGRAM_ID> --rpc https://api.mainnet-beta.solana.com
 node dist/index.js --idl ./examples/sample-idl.json --program <PROGRAM_ID>
+
+# Streamable-HTTP server at http://localhost:8787/mcp
+node dist/index.js --http 8787 --program <PROGRAM_ID> --rpc https://api.mainnet-beta.solana.com
 ```
-Add to Claude Desktop / Cursor as an MCP server running the above command. Read + simulate only (no signing in v1).
+
+### Use with Claude Desktop / Cursor (stdio)
+```json
+{
+  "mcpServers": {
+    "anchor-mcp": {
+      "command": "node",
+      "args": ["/abs/path/to/anchor-mcp/dist/index.js", "--program", "<PROGRAM_ID>", "--rpc", "https://api.mainnet-beta.solana.com"]
+    }
+  }
+}
+```
+
+Read + simulate only — **no signing in v1**.
 
 ## License
 MIT
+
