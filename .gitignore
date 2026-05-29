@@ -14,3 +14,11 @@ PLAN.md
 # AI session export (proof-of-work; contains full transcript — never commit)
 *-session.jsonl
 claude-session.jsonl
+
+# AI subscription receipts (contain PII: name/home address/email — final-tranche proof, never commit)
+Receipt-*.pdf
+*:Zone.Identifier
+
+# skill installer artifacts (npx skills add)
+.agents/
+skills-lock.json
