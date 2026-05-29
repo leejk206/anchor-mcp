@@ -12,7 +12,8 @@ To let an AI agent interact with a Solana program today, you hand-write integrat
 - Generate an MCP tool per instruction (typed args + accounts).
 - **Auto-derive PDAs** when the IDL declares seeds (Anchor 0.30+); else accept explicit address input.
 - **Simulate-by-default**: build + `simulateTransaction` + account reads. **No signing in v1** (safety — write = drain risk).
-- Exposed over **stdio + Streamable-HTTP** (a real public URL) → drop-in for Claude Desktop / Cursor.
+- **Graceful degradation**: if the full Anchor client can't be built for an IDL, tool generation + `program_info` still work (read/simulate are disabled for that program, with the reason surfaced) — so *any* program with an IDL yields at least its instruction/account map.
+- Exposed over **stdio** (drop-in for Claude Desktop / Cursor). Streamable-HTTP transport on the roadmap.
 
 ## How it differs (verified competitor scan)
 | Existing | What it does | anchor-mcp difference |

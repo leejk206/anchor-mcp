@@ -6,8 +6,11 @@ import { makeReadonlyProvider } from "./provider.js";
 export interface LoadedProgram {
   idl: Idl;
   programId: PublicKey;
-  program: Program;
+  /** Full Anchor client. null when the IDL can't be built into a client (read/simulate then disabled). */
+  program: Program | null;
   provider: AnchorProvider;
+  /** Reason the Anchor client couldn't be built, if any. Tool generation & program_info still work. */
+  degraded: string | null;
 }
 
 function idlAddress(idl: Idl): string | undefined {
@@ -45,6 +48,17 @@ export async function loadProgram(opts: {
 
   // Anchor 0.30 reads the program id from idl.address.
   (idl as any).address = programId.toBase58();
-  const program = new Program(idl as Idl, provider);
-  return { idl, programId, program, provider };
+
+  // Tool generation + program_info work directly from the IDL JSON. The full Anchor
+  // client (needed only for read_account / simulate) can fail to build on some IDLs
+  // (e.g. unusual type defs) — degrade gracefully instead of failing the whole load.
+  let program: Program | null = null;
+  let degraded: string | null = null;
+  try {
+    program = new Program(idl as Idl, provider);
+  } catch (e: any) {
+    degraded = `Anchor client could not be built for this IDL (${String(e?.message ?? e)}). Tool generation & program_info work; read_account/simulate are disabled for this program.`;
+  }
+
+  return { idl, programId, program, provider, degraded };
 }

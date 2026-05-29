@@ -15,9 +15,14 @@ export function buildToolDefs(lp: LoadedProgram): ToolDef[] {
 
   tools.push({
     name: "program_info",
-    description: `Describe Anchor program ${lp.programId.toBase58()} from its IDL: instructions, account types, errors.`,
+    description:
+      `Describe Anchor program ${lp.programId.toBase58()} from its IDL: instructions, account types, errors.` +
+      (lp.degraded ? " (read_account/simulate unavailable for this program — see program_info.degraded)" : ""),
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
   });
+
+  // Degraded mode: the Anchor client couldn't be built — only IDL-derived info is available.
+  if (!lp.program) return tools;
 
   const accountTypes: string[] = (idl.accounts ?? []).map((a: any) => a.name);
   if (accountTypes.length) {
@@ -81,6 +86,7 @@ export async function callTool(lp: LoadedProgram, name: string, input: any): Pro
     return {
       programId: lp.programId.toBase58(),
       version: idl.metadata?.version ?? idl.version,
+      degraded: lp.degraded ?? false,
       instructions: (idl.instructions ?? []).map((ix: any) => ({
         name: ix.name,
         args: (ix.args ?? []).map((a: any) => ({ name: a.name, type: typeLabel(a.type) })),
@@ -95,6 +101,8 @@ export async function callTool(lp: LoadedProgram, name: string, input: any): Pro
       errors: (idl.errors ?? []).map((e: any) => ({ code: e.code, name: e.name, msg: e.msg })),
     };
   }
+
+  if (!lp.program) throw new Error(lp.degraded ?? "Anchor client unavailable for this IDL.");
 
   if (name === "read_account") {
     const ns =
