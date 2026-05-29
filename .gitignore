@@ -10,3 +10,7 @@ dist/
 GRANT.md
 PLAN.md
 .superstack/
+
+# AI session export (proof-of-work; contains full transcript — never commit)
+*-session.jsonl
+claude-session.jsonl
