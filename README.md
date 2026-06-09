@@ -32,11 +32,16 @@ To let an AI agent interact with a Solana program today, you hand-write integrat
 v1. Verified: loads an Anchor IDL (on-chain `Program.fetchIdl` or local file) → generates per-instruction MCP tools → serves over **stdio and Streamable-HTTP**.
 - Offline: `scripts/smoke.ts` (tool gen), `scripts/e2e.ts` (stdio MCP round-trip), `scripts/e2e-http.ts` (HTTP MCP round-trip).
 - On-chain (mainnet): `scripts/probe.ts` found on-chain IDLs for Squads/MarginFi/Kamino/Jupiter/Meteora/Pump.fun; `scripts/inspect.ts` ran `program_info` on Pump.fun (42 tools) and Squads v4 (degraded → 31 instructions); `scripts/live-read.ts` decoded Pump.fun's on-chain `Global` account via `read_account`.
+- **Live `simulate` (mainnet)**: the [playground](https://anchor-mcp-playground.vercel.app) builds an instruction and runs `simulateTransaction` on-chain — returns real program logs, compute units, and decoded Anchor errors, no signing. (e.g. Pump.fun `toggle_cashback_enabled` → 9,684 CU + `NotAuthorized` decoded.)
 
-Pending: live `simulate` demo, npm publish. Full spec → `docs/SPEC.md`.
+Pending: npm publish. Full spec → `docs/SPEC.md`.
 
 ## Quickstart
 ```bash
+# from npm (after publish):
+npx anchor-mcp --program <PROGRAM_ID> --rpc https://api.mainnet-beta.solana.com
+
+# or from source:
 npm install && npm run build
 
 # stdio (for Claude Desktop / Cursor) — point at a program ID or a local IDL:
