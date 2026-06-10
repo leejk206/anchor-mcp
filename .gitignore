@@ -19,6 +19,11 @@ claude-session.jsonl
 Receipt-*.pdf
 *:Zone.Identifier
 
+# secrets (npm 2FA recovery codes, tokens, etc. — NEVER commit)
+.secret
+.secret.*
+.secrets/
+
 # skill installer artifacts (npx skills add)
 .agents/
 skills-lock.json
