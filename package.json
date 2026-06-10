@@ -4,6 +4,14 @@
   "description": "Generate MCP tools from any Solana Anchor program's IDL — let AI agents read & simulate its instructions with zero per-program code.",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leejk206/anchor-mcp.git"
+  },
+  "homepage": "https://github.com/leejk206/anchor-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/leejk206/anchor-mcp/issues"
+  },
   "bin": {
     "anchor-mcp": "dist/index.js"
   },
@@ -12,6 +20,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build && npm test",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
     "smoke": "tsx scripts/smoke.ts",
